@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "yarn workspace toy-react-fixtures-counter-app dev",
+    "build": "yarn workspace toy-react-fixtures-counter-app build",
+    "clean": "yarn workspace toy-react-fixtures-counter-app clean",
+    "start": "yarn workspace toy-react-fixtures-counter-app start"
+  },
+  "workspaces": [
+    "packages/*",
+    "fixtures/*"
+  ]
+}
