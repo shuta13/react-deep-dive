@@ -1,0 +1,16 @@
+{
+  "name": "toy-react-dom",
+  "version": "0.1.0",
+  "description": "Project for deep-diving into React.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shuta13/react-deep-dive.git",
+    "directory": "packages/toy-react-dom"
+  },
+  "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)",
+  "license": "MIT",
+  "peerDependencies": {
+    "toy-react": "^0.1.0"
+  }
+}
