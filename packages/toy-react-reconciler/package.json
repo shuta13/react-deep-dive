@@ -1,5 +1,5 @@
 {
-  "name": "toy-react-reconcilers",
+  "name": "toy-react-reconciler",
   "version": "0.1.0",
   "description": "Project for deep-diving into React.",
   "main": "index.js",

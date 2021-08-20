@@ -1,8 +1,7 @@
 'use strict';
 
-import { greetToyReact } from 'toy-react';
-import { greetToyReactFiber, greetToyReactStack } from 'toy-react-dom';
+const ToyReact = require('toy-react');
+const ToyReactDOM = require('toy-react-dom');
 
-greetToyReact();
-greetToyReactFiber();
-greetToyReactStack();
+ToyReactDOM.render(1, 2, () => {});
+ToyReactDOM.hydrate(1, 2, () => {});

@@ -1,3 +1,11 @@
 'use strict';
 
-export { greetToyReactFiber, greetToyReactStack } from 'toy-react-reconcilers';
+function render(element, container, callback) {
+  console.log('This is render.');
+}
+
+function hydrate(element, container, callback) {
+  console.log('This is hydrate.');
+}
+
+export { render, hydrate };
