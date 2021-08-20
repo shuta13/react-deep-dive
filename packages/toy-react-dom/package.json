@@ -11,6 +11,6 @@
   "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)>",
   "license": "MIT",
   "dependencies": {
-    "toy-react-reconcilers": "^0.1.0"
+    "toy-react-reconciler": "^0.1.0"
   }
 }
