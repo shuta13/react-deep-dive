@@ -1,27 +1,7 @@
 'use strict';
 
 const { useState } = require('toy-react');
-
-/**
- * @param {{ count: number, increaseCount: () => void, decreaseCount: () => void }} props
- * @returns
- */
-const Counter = (props) => {
-  const { count, increaseCount, decreaseCount } = props;
-
-  return (
-    <section>
-      <header>
-        <h2>Counter</h2>
-      </header>
-      <div>
-        <span>{count}</span>
-        <button onClick={increaseCount}>increment</button>
-        <button onClick={decreaseCount}>decrement</button>
-      </div>
-    </section>
-  );
-};
+const { Counter } = require('./Counter');
 
 export const App = () => {
   const [count, setCount] = useState(0);
