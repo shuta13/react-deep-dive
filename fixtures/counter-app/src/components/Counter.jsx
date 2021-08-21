@@ -1,4 +1,4 @@
-'use-strict';
+'use strict';
 
 /**
  * @param {{ count: number, increaseCount: () => void, decreaseCount: () => void }} props

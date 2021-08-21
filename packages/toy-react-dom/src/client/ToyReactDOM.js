@@ -1,5 +1,5 @@
 // @ts-check
-'use-strict';
+'use strict';
 
 import {
   updateContainer,
