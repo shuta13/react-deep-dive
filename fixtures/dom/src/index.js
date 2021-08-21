@@ -3,4 +3,6 @@
 const ToyReact = require('toy-react');
 const ToyReactDOM = require('toy-react-dom');
 
-ToyReactDOM.render(1, 2, () => {});
+const element = ToyReact.createElement('h1');
+
+ToyReactDOM.render(element, document.getElementById('root'));

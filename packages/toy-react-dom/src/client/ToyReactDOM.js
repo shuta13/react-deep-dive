@@ -5,6 +5,7 @@ import {
   updateContainer,
   flushSyncWithoutWarningIfAlreadyRendering,
   getPublicRootInstance,
+  // @ts-ignore
 } from 'toy-react-reconciler';
 
 function createRootFromDOMContainer(container, forceHydrate) {}
