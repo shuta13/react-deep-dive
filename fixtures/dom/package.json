@@ -27,6 +27,7 @@
   },
   "scripts": {
     "clean": "rimraf build",
+    "dev": "yarn clean && webpack --mode=development",
     "build": "yarn clean && webpack --mode=production",
     "start": "serve build"
   }
