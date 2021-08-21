@@ -3,7 +3,7 @@
 const { useState } = require('toy-react');
 const { Counter } = require('./Counter');
 
-export const App = () => {
+const App = () => {
   const [count, setCount] = useState(0);
 
   const increaseCount = () => {
@@ -27,3 +27,5 @@ export const App = () => {
     </main>
   );
 };
+
+export default App;

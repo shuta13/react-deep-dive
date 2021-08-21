@@ -8,7 +8,7 @@
     "url": "https://github.com/shuta13/react-deep-dive.git",
     "directory": "packages/toy-react-dom"
   },
-  "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)>",
+  "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)",
   "license": "MIT",
   "dependencies": {
     "toy-react-reconciler": "^0.1.0"

@@ -1,14 +1,14 @@
 {
-  "name": "toy-react-fixtures-dom",
+  "name": "toy-react-fixtures-counter-app",
   "version": "0.1.0",
   "description": "Project for deep-diving into React.",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/shuta13/react-deep-dive.git",
-    "directory": "fixtures/dom"
+    "directory": "fixtures/counter-app"
   },
-  "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)>",
+  "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)",
   "license": "MIT",
   "dependencies": {
     "toy-react": "^0.1.0",
