@@ -1,22 +1,22 @@
 'use strict';
 
 // toy-react から useState を require
-const { useState } = require('toy-react');
+// const { useState } = require('toy-react');
 // Counter コンポーネントを require
-const { Counter } = require('./Counter');
+// const { Counter } = require('./Counter');
 
 const App = () => {
   // useState でカウンターの state を定義
-  const [count, setCount] = useState(0);
+  // const [count, setCount] = useState(0);
 
   // カウントアップ
   const countUp = () => {
-    setCount((prevState) => prevState + 1);
+    // setCount((prevState) => prevState + 1);
   };
 
   // カウントダウン
   const countDown = () => {
-    setCount((prevState) => prevState - 1);
+    // setCount((prevState) => prevState - 1);
   };
 
   return (
@@ -25,7 +25,7 @@ const App = () => {
         <h1>This is Toy React!</h1>
       </header>
       {/* Counter コンポーネントを追加 */}
-      <Counter count={count} countUp={countUp} countDown={countDown} />
+      {/* <Counter count={count} countUp={countUp} countDown={countDown} /> */}
     </main>
   );
 };

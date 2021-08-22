@@ -1,9 +1,5 @@
 'use strict';
 
-/**
- * @param {{ count: number, countUp: () => void, countDown: () => void }} props
- * @returns
- */
 export const Counter = (props) => {
   const { count, countUp, countDown } = props;
 
