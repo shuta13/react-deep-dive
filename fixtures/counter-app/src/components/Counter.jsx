@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * @param {{ count: number, increaseCount: () => void, decreaseCount: () => void }} props
+ * @param {{ count: number, countUp: () => void, countDown: () => void }} props
  * @returns
  */
 export const Counter = (props) => {
-  const { count, increaseCount, decreaseCount } = props;
+  const { count, countUp, countDown } = props;
 
   return (
     <section>
@@ -14,8 +14,8 @@ export const Counter = (props) => {
       </header>
       <div>
         <span>{count}</span>
-        <button onClick={increaseCount}>increment</button>
-        <button onClick={decreaseCount}>decrement</button>
+        <button onClick={countUp}>+</button>
+        <button onClick={countDown}>-</button>
       </div>
     </section>
   );
