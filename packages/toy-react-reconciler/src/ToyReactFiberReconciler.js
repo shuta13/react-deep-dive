@@ -1,11 +1,28 @@
+// @ts-check
 'use strict';
+
+import { getPublicInstance } from './ToyReactFiberHostConfig';
+import { createFiberRoot } from './ToyReactFiberRoot';
 
 // https://github.com/facebook/react/blob/4ecf11977c46966d3deedcdc71f1280a34607d1d/packages/react-reconciler/src/ReactWorkTags.js#L42
 const HostComponent = 5;
 
-// https://github.com/facebook/react/blob/9e8fe11e118c07713c7af4458b70aae57c889394/packages/react-dom/src/client/ReactDOMHostConfig.js#L218
-function getPublicInstance(instance) {
-  return instance;
+export function createContainer(
+  containerInfo,
+  tag,
+  hydrate,
+  hydrationCallbacks,
+  isStrictMode,
+  concurrentUpdatesByDefaultOverride
+) {
+  return createFiberRoot(
+    containerInfo,
+    tag,
+    hydrate,
+    hydrationCallbacks,
+    isStrictMode,
+    concurrentUpdatesByDefaultOverride
+  );
 }
 
 export function updateContainer(
