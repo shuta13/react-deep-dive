@@ -40,14 +40,6 @@ function legacyCreateRootFromDOMContainer(container, forceHydrate) {
   return root;
 }
 
-/**
- * @param {*} parentComponent
- * @param {*} children
- * @param {*} container
- * @param {boolean} forceHydrate
- * @param {Function=} callback
- * @returns
- */
 function legacyRenderSubtreeIntoContainer(
   parentComponent,
   children,
@@ -64,6 +56,8 @@ function legacyRenderSubtreeIntoContainer(
       forceHydrate
     );
     fiberRoot = root;
+
+    console.dir(fiberRoot);
 
     if (typeof callback === 'function') {
       const originalCallback = callback;
@@ -93,12 +87,6 @@ function legacyRenderSubtreeIntoContainer(
   return getPublicRootInstance(fiberRoot);
 }
 
-/**
- * @param {*} element
- * @param {*} container
- * @param {Function=} callback
- * @returns
- */
 export function render(element, container, callback) {
   return legacyRenderSubtreeIntoContainer(
     null,

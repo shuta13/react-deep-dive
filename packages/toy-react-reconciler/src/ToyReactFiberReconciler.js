@@ -3,9 +3,7 @@
 
 import { getPublicInstance } from './ToyReactFiberHostConfig';
 import { createFiberRoot } from './ToyReactFiberRoot';
-
-// https://github.com/facebook/react/blob/4ecf11977c46966d3deedcdc71f1280a34607d1d/packages/react-reconciler/src/ReactWorkTags.js#L42
-const HostComponent = 5;
+import { HostComponent } from './ToyReactWorkTags';
 
 export function createContainer(
   containerInfo,

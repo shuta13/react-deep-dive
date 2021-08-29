@@ -1,6 +1,7 @@
 // @ts-check
 'use strict';
 
+import { NoFlags } from './ToyReactFiberFlags';
 import { NoLanes } from './ToyReactFiberLanes';
 
 // https://github.com/facebook/react/blob/9e8fe11e118c07713c7af4458b70aae57c889394/packages/react-reconciler/src/ReactWorkTags.js#L40
@@ -8,9 +9,6 @@ const HostRoot = 3;
 
 // https://github.com/facebook/react/blob/9e8fe11e118c07713c7af4458b70aae57c889394/packages/react-reconciler/src/ReactTypeOfMode.js#L12
 const NoMode = 0b000000;
-
-// https://github.com/facebook/react/blob/a8725a3e628e8e75d408101e5565b2d2af3902c3/packages/react-reconciler/src/ReactFiberFlags.js#L15
-const NoFlags = 0b00000000000000000000000;
 
 // https://github.com/facebook/react/blob/cae635054e17a6f107a39d328649137b83f25972/scripts/rollup/build.js#L405
 // related: https://github.com/facebook/react/issues/6627

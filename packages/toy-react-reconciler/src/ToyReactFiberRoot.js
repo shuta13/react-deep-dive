@@ -5,7 +5,7 @@ import { createHostRootFiber } from './ToyReactFiber';
 import { noTimeout } from './ToyReactFiberHostConfig';
 import {
   createLaneMap,
-  NoLanePriority,
+  NoLane,
   NoLanes,
   NoTimestamp,
 } from './ToyReactFiberLanes';
@@ -30,7 +30,7 @@ function FiberRootNode(containerInfo, tag, hydrate) {
   this.pendingContext = null;
   this.hydrate = hydrate;
   this.callbackNode = null;
-  this.callbackPriority = NoLanePriority;
+  this.callbackPriority = NoLane;
   this.eventTimes = createLaneMap(NoLanes);
   this.expirationTimes = createLaneMap(NoTimestamp);
 
