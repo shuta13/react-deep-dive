@@ -10,12 +10,13 @@ import {
   lanesToEventPriority,
   lowerEventPriority,
 } from './ToyReactEventPriorities';
-import { NoLanes } from './ToyReactFiberLanes';
+import { NoLane, NoLanes, NoTimestamp, SyncLane } from './ToyReactFiberLanes';
 import { flushSyncCallbacks } from './ToyReactFiberSyncTaskQueue';
 import {
   commitPassiveMountEffects,
   commitPassiveUnmountEffects,
 } from './ToyReactFiberCommitWork';
+import { now } from './Scheduler';
 
 // https://github.com/facebook/react/blob/860f673a7a6bf826010d41de2f66de62171ab676/packages/react-reconciler/src/ReactRootTags.js#L12
 const LegacyRoot = 0;
@@ -33,6 +34,88 @@ let pendingPassiveEffectsLanes = NoLanes;
 let nestedPassiveUpdateCount = 0;
 
 const { ToyReactCurrentBatchConfig } = ToyReactSharedInternals;
+
+let currentEventTime = NoTimestamp;
+
+export function requestEventTime() {
+  if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
+    return now();
+  }
+
+  if (currentEventTime !== NoTimestamp) {
+    return currentEventTime;
+  }
+
+  currentEventTime = now();
+  return currentEventTime;
+}
+
+export function requestUpdateLane(fiber) {
+  const mode = fiber.mode;
+  if ((mode & ConcurrentMode) === NoMode) {
+    return SyncLane;
+  } else if (
+    !deferRenderPhaseUpdateToNextBatch &&
+    (executionContext & RenderContext) !== NoContext &&
+    workInProgressRootRenderLanes !== NoLanes
+  ) {
+    return pickArbitraryLane(workInProgressRootRenderLanes);
+  }
+
+  const isTransition = requestCurrentTransition() !== NoTransition;
+  if (isTransition) {
+    if (currentEventTransitionLane === NoLane) {
+      currentEventTransitionLane = claimNextTransitionLane();
+    }
+    return currentEventTransitionLane;
+  }
+
+  const updateLane = getCurrentUpdatePriority();
+  if (updateLane !== NoLane) {
+    return updateLane;
+  }
+
+  const eventLane = getCurrentUpdatePriority();
+  return eventLane;
+}
+
+export function scheduleUpdateOnFiber(fiber, lane, eventTime) {
+  checkForNestedUpdates();
+
+  const root = markUpdateLaneFromFiberToRoot(fiber, lane);
+  if (root === null) {
+    return;
+  }
+
+  markRootUpdated(root, lane, eventTime);
+
+  if (root === workInProgressRoot) {
+    if (
+      deferRenderPhaseUpdateToNextBatch ||
+      (executionContext & RenderContext) === NoContext
+    ) {
+      workInProgressRootUpdatedLanes = mergeLanes(
+        workInProgressRootUpdatedLanes,
+        lane
+      );
+    }
+    if (workInProgressRootExitStatus === RootSuspendedWithDelay) {
+      markRootSuspended(root, workInProgressRootRenderLanes);
+    }
+  }
+
+  ensureRootIsScheduled(root, eventTime);
+  if (
+    lane === SyncLane &&
+    executionContext === NoContext &&
+    !ToyReactCurrentActQueue.isBatchingLegacy
+  ) {
+    resetRenderTimer();
+    flushSyncCallbacksOnlyInLegacyMode();
+  }
+
+  return root;
+}
 
 export function flushPassiveEffects() {
   if (rootWithPendingPassiveEffects !== null) {

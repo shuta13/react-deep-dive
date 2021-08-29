@@ -1,5 +1,7 @@
 'use strict';
 
+const ToyReact = require('toy-react');
+
 // toy-react から useState を require
 // const { useState } = require('toy-react');
 // Counter コンポーネントを require

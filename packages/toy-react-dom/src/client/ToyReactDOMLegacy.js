@@ -7,7 +7,7 @@ import {
   flushSyncWithoutWarningIfAlreadyRendering,
   getPublicRootInstance,
   // @ts-ignore
-} from 'toy-react-reconciler';
+} from 'toy-react-reconciler/src/ToyReactFiberReconciler';
 import { listenToAllSupportedEvents } from '../events/DOMPluginEventSystem';
 
 // https://github.com/facebook/react/blob/860f673a7a6bf826010d41de2f66de62171ab676/packages/react-reconciler/src/ReactRootTags.js#L12
@@ -56,8 +56,6 @@ function legacyRenderSubtreeIntoContainer(
       forceHydrate
     );
     fiberRoot = root;
-
-    console.dir(fiberRoot);
 
     if (typeof callback === 'function') {
       const originalCallback = callback;

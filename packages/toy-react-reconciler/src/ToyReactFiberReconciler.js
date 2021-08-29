@@ -4,6 +4,23 @@
 import { getPublicInstance } from './ToyReactFiberHostConfig';
 import { createFiberRoot } from './ToyReactFiberRoot';
 import { HostComponent } from './ToyReactWorkTags';
+import {
+  requestEventTime,
+  requestUpdateLane,
+  scheduleUpdateOnFiber,
+} from './ToyReactFiberWorkLoop';
+import {
+  createUpdate,
+  enqueueUpdate,
+  entangleTransitions,
+} from './ToyReactUpdateQueue';
+import { emptyContextObject } from './ToyReactFiberContext';
+
+function getContextForSubtree(parentComponent) {
+  if (!parentComponent) {
+    return emptyContextObject;
+  }
+}
 
 export function createContainer(
   containerInfo,
@@ -23,12 +40,34 @@ export function createContainer(
   );
 }
 
-export function updateContainer(
-  element,
-  container,
-  parentComponent,
-  callback
-) {}
+export function updateContainer(element, container, parentComponent, callback) {
+  const current = container.current;
+  const eventTime = requestEventTime();
+  const lane = requestUpdateLane();
+
+  const context = getContextForSubtree(parentComponent);
+  if (container.context === null) {
+    container.context = context;
+  } else {
+    container.pendingContext = context;
+  }
+
+  const update = createUpdate(eventTime, lane);
+  update.payload = { element };
+
+  callback = callback === undefined ? null : callback;
+  if (callback !== null) {
+    update.callback = callback;
+  }
+
+  enqueueUpdate(current, update, lane);
+  const root = scheduleUpdateOnFiber(current, lane, eventTime);
+  if (root !== null) {
+    entangleTransitions(root, current, lane);
+  }
+
+  return lane;
+}
 
 export { flushSyncWithoutWarningIfAlreadyRendering } from './ToyReactFiberWorkLoop';
 
