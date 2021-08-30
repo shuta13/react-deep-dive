@@ -6,7 +6,7 @@ const webpack = require('webpack');
  * @type {import('webpack').Configuration}
  */
 const config = {
-  entry: './src/index.jsx',
+  entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, './build'),
     filename: 'main.bundle.js',

@@ -1,5 +1,7 @@
 'use strict';
 
+const ToyReact = require('toy-react');
+
 export const Counter = (props) => {
   const { count, countUp, countDown } = props;
 

@@ -7,7 +7,7 @@ const ToyReact = require('toy-react');
 // Counter コンポーネントを require
 // const { Counter } = require('./Counter');
 
-const App = () => {
+export const App = () => {
   // useState でカウンターの state を定義
   // const [count, setCount] = useState(0);
 
@@ -32,4 +32,4 @@ const App = () => {
   );
 };
 
-export default App;
+// export default App;

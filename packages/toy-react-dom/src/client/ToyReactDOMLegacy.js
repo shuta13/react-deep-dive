@@ -6,9 +6,9 @@ import {
   updateContainer,
   flushSyncWithoutWarningIfAlreadyRendering,
   getPublicRootInstance,
-  // @ts-ignore
 } from 'toy-react-reconciler/src/ToyReactFiberReconciler';
 import { listenToAllSupportedEvents } from '../events/DOMPluginEventSystem';
+import { markContainerAsRoot } from './ToyReactDOMComponentTree';
 
 // https://github.com/facebook/react/blob/860f673a7a6bf826010d41de2f66de62171ab676/packages/react-reconciler/src/ReactRootTags.js#L12
 const LegacyRoot = 0;
@@ -32,6 +32,7 @@ function legacyCreateRootFromDOMContainer(container, forceHydrate) {
     false, // isStrictMode
     false // concurrentUpdatesByDefaultOverride,
   );
+  markContainerAsRoot(root.current, container);
 
   const rootContainerElement =
     container.nodeType === COMMENT_NODE ? container.parentNode : container;
@@ -49,7 +50,6 @@ function legacyRenderSubtreeIntoContainer(
 ) {
   let root = container._toyReactRootContainer;
   let fiberRoot;
-
   if (!root) {
     root = container._toyReactRootContainer = legacyCreateRootFromDOMContainer(
       container,

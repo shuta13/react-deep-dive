@@ -46,6 +46,7 @@ export function updateContainer(element, container, parentComponent, callback) {
   const lane = requestUpdateLane(current);
 
   const context = getContextForSubtree(parentComponent);
+
   if (container.context === null) {
     container.context = context;
   } else {
