@@ -1,8 +1,8 @@
 // @ts-check
 'use strict';
 
-import hasOwnProperty from 'shared/hasOwnProperty';
-import { TOY_REACT_ELEMENT_TYPE } from 'shared/ToyReactSymbols';
+import hasOwnProperty from 'toy-shared/hasOwnProperty';
+import { TOY_REACT_ELEMENT_TYPE } from 'toy-shared/ToyReactSymbols';
 import ToyReactCurrentOwner from './ToyReactCurrentOwner';
 
 const RESERVED_PROPS = {

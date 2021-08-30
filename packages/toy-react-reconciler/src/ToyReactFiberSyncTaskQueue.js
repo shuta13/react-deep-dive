@@ -11,6 +11,12 @@ let syncQueue = null;
 let includesLegacySyncCallbacks = false;
 let isFlushingSyncQueue = false;
 
+export function flushSyncCallbacksOnlyInLegacyMode() {
+  if (includesLegacySyncCallbacks) {
+    flushSyncCallbacks();
+  }
+}
+
 export function flushSyncCallbacks() {
   if (!isFlushingSyncQueue && syncQueue !== null) {
     isFlushingSyncQueue = true;

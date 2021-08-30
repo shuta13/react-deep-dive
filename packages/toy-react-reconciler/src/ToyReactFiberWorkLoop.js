@@ -1,7 +1,7 @@
 // @ts-check
 'use strict';
 
-import ToyReactSharedInternals from 'shared/ToyReactSharedInternals';
+import ToyReactSharedInternals from 'toy-shared/ToyReactSharedInternals';
 import {
   DiscreteEventPriority,
   DefaultEventPriority,
@@ -10,32 +10,79 @@ import {
   lanesToEventPriority,
   lowerEventPriority,
 } from './ToyReactEventPriorities';
-import { NoLane, NoLanes, NoTimestamp, SyncLane } from './ToyReactFiberLanes';
-import { flushSyncCallbacks } from './ToyReactFiberSyncTaskQueue';
+import {
+  claimNextTransitionLane,
+  getHighestPriorityLane,
+  getNextLanes,
+  markRootSuspended,
+  markRootUpdated,
+  markStarvedLanesAsExpired,
+  mergeLanes,
+  NoLane,
+  NoLanes,
+  NoTimestamp,
+  pickArbitraryLane,
+  SyncLane,
+} from './ToyReactFiberLane';
+import {
+  flushSyncCallbacks,
+  flushSyncCallbacksOnlyInLegacyMode,
+} from './ToyReactFiberSyncTaskQueue';
 import {
   commitPassiveMountEffects,
   commitPassiveUnmountEffects,
 } from './ToyReactFiberCommitWork';
-import { now } from './Scheduler';
+import { cancelCallback, now } from './Scheduler';
+import { ConcurrentMode, NoMode } from './ToyReactTypeOfMode';
+import {
+  NoTransition,
+  requestCurrentTransition,
+} from './ToyReactFiberTransition';
+import { HostRoot } from './ToyReactWorkTags';
 
 // https://github.com/facebook/react/blob/860f673a7a6bf826010d41de2f66de62171ab676/packages/react-reconciler/src/ReactRootTags.js#L12
 const LegacyRoot = 0;
+
+// https://github.com/facebook/react/blob/19092ac8c354b92c2e0e27b73f391571ad452505/packages/shared/ReactFeatureFlags.js#L163
+const deferRenderPhaseUpdateToNextBatch = false;
 
 export const NoContext = 0b0000;
 const BatchedContext = 0b0001;
 const RenderContext = 0b0010;
 const CommitContext = 0b0100;
 
+const RootIncomplete = 0;
+const RootSuspendedWithDelay = 4;
+
 let executionContext = NoContext;
+let workInProgressRoot = null;
+
+let workInProgressRootRenderLanes = NoLanes;
 
 let rootWithPendingPassiveEffects = null;
 let pendingPassiveEffectsLanes = NoLanes;
 
 let nestedPassiveUpdateCount = 0;
 
-const { ToyReactCurrentBatchConfig } = ToyReactSharedInternals;
+const { ToyReactCurrentBatchConfig, ToyReactCurrentActQueue } =
+  ToyReactSharedInternals;
+
+const NESTED_UPDATE_LIMIT = 50;
+let nestedUpdateCount = 0;
+let rootWithNestedUpdates = null;
 
 let currentEventTime = NoTimestamp;
+let currentEventTransitionLane = NoLanes;
+
+let workInProgressRootExitStatus = RootIncomplete;
+let workInProgressRootUpdatedLanes = NoLanes;
+let workInProgressRootRenderTargetTime = Infinity;
+
+const RENDER_TIMEOUT_MS = 500;
+
+function resetRenderTimer() {
+  workInProgressRootRenderTargetTime = now() + RENDER_TIMEOUT_MS;
+}
 
 export function requestEventTime() {
   if ((executionContext & (RenderContext | CommitContext)) !== NoContext) {
@@ -48,6 +95,38 @@ export function requestEventTime() {
 
   currentEventTime = now();
   return currentEventTime;
+}
+
+function ensureRootIsScheduled(root, currentTime) {
+  const existingCallbackNode = root.callbackNode;
+
+  markStarvedLanesAsExpired(root, currentTime);
+
+  const nextLanes = getNextLanes(
+    root,
+    root === workInProgressRoot ? workInProgressRootRenderLanes : NoLanes
+  );
+
+  if (nextLanes === NoLanes) {
+    if (existingCallbackNode !== null) {
+      cancelCallback(existingCallbackNode);
+    }
+    root.callbackNode = null;
+    root.callbackPriority = NoLane;
+    return;
+  }
+
+  const newCallbackPriority = getHighestPriorityLane(nextLanes);
+
+  const existingCallbackPriority = root.callbackPriority;
+
+  if (existingCallbackNode != null) {
+    cancelCallback(existingCallbackNode);
+  }
+
+  let newCallbackNode;
+  if (newCallbackPriority === SyncLane) {
+  }
 }
 
 export function requestUpdateLane(fiber) {
@@ -169,6 +248,42 @@ export function flushSyncWithoutWarningIfAlreadyRendering(fn) {
   }
 }
 
+function markUpdateLaneFromFiberToRoot(sourceFiber, lane) {
+  sourceFiber.lanes = mergeLanes(sourceFiber.lanes, lane);
+  let alternate = sourceFiber.alternate;
+  if (alternate !== null) {
+    alternate.lanes = mergeLanes(alternate.lanes, lane);
+  }
+
+  let node = sourceFiber;
+  let parent = sourceFiber.return;
+  while (parent !== null) {
+    parent.childLanes = mergeLanes(parent.childLanes, lane);
+    alternate = parent.alternate;
+    if (alternate !== null) {
+      alternate.childLanes = mergeLanes(alternate.childLanes, lane);
+    }
+
+    node = parent;
+    parent = parent.return;
+  }
+  if (node.tag === HostRoot) {
+    const root = node.stateNode;
+    return root;
+  } else {
+    return null;
+  }
+}
+
+export function isInterleavedUpdate(fiber, lane) {
+  return (
+    workInProgressRoot !== null &&
+    (fiber.mode & ConcurrentMode) !== NoMode &&
+    (deferRenderPhaseUpdateToNextBatch ||
+      (executionContext & RenderContext) === NoContext)
+  );
+}
+
 function flushPassiveEffectsImpl() {
   if (rootWithPendingPassiveEffects === null) {
     return false;
@@ -195,4 +310,11 @@ function flushPassiveEffectsImpl() {
   // onPostCommitRootDevTools(root);
 
   return true;
+}
+
+function checkForNestedUpdates() {
+  if (nestedUpdateCount > NESTED_UPDATE_LIMIT) {
+    nestedUpdateCount = 0;
+    rootWithNestedUpdates = null;
+  }
 }

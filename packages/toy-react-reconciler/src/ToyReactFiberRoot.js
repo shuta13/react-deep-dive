@@ -8,7 +8,7 @@ import {
   NoLane,
   NoLanes,
   NoTimestamp,
-} from './ToyReactFiberLanes';
+} from './ToyReactFiberLane';
 import { initializeUpdateQueue } from './ToyReactUpdateQueue';
 
 // https://github.com/facebook/react/blob/860f673a7a6bf826010d41de2f66de62171ab676/packages/shared/ReactFeatureFlags.js#L88

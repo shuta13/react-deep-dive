@@ -11,6 +11,7 @@
   "author": "shuta13(did0es) <hollystarsun@gmail.com> (https://studio.did0es.me)",
   "license": "MIT",
   "dependencies": {
-    "shared": "^0.1.0"
+    "toy-shared": "^0.1.0",
+    "toy-scheduler": "^0.1.0"
   }
 }

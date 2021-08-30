@@ -9,7 +9,7 @@ import {
   IdleLane,
   getHighestPriorityLane,
   includesNonIdleWork,
-} from './ToyReactFiberLanes';
+} from './ToyReactFiberLane';
 
 export const DiscreteEventPriority = SyncLane;
 export const ContinuousEventPriority = InputContinuousLane;
