@@ -1,6 +1,8 @@
 // @ts-check
 'use strict';
 
+import { ImmediatePriority } from '../../toy-scheduler/src/forks/ToySchedulerPriorities';
+import { scheduleCallback } from './Scheduler';
 import {
   DiscreteEventPriority,
   getCurrentUpdatePriority,
@@ -43,7 +45,7 @@ export function flushSyncCallbacks() {
       }
 
       // TODO: implements ?
-      // scheduleCallback(ImmediatePriority, flushSyncCallbacks);
+      scheduleCallback(ImmediatePriority, flushSyncCallbacks);
       throw error;
     } finally {
       setCurrentUpdatePriority(previousUpdatePriority);
