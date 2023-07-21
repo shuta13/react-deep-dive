@@ -1,10 +1,10 @@
 {
   "private": true,
   "scripts": {
-    "dev": "yarn workspace toy-react-fixtures-counter-app dev",
-    "build": "yarn workspace toy-react-fixtures-counter-app build",
-    "clean": "yarn workspace toy-react-fixtures-counter-app clean",
-    "start": "yarn workspace toy-react-fixtures-counter-app start"
+    "dev": "npm run -w toy-react-fixtures-counter-app dev",
+    "build": "npm run -w toy-react-fixtures-counter-app build",
+    "clean": "npm run -w toy-react-fixtures-counter-app clean",
+    "start": "npm run -w toy-react-fixtures-counter-app start"
   },
   "workspaces": [
     "packages/*",
