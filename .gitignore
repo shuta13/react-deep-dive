@@ -90,3 +90,6 @@ typings/
 .dynamodb/
 
 build/
+
+# macOS
+.DS_Store
