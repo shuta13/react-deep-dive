@@ -119,7 +119,7 @@ export function render(element, container) {
 
 ```
 
-ここまで行った後、確認のため counter-app を起動してみましょう(`yarn dev && yarn start` を行って下さい)。
+ここまで行った後、確認のため counter-app を起動してみましょう(`npm run dev && npm run start` を行って下さい)。
 
 「あれ、何も表示されないじゃん！」となると思います。一旦 `fixtures/counter-app/src/index.js` を開き、以下のように修正してみてください。
 
@@ -140,7 +140,7 @@ ToyReactDOM.render(<h1>This is ToyReact!</h1>, document.getElementById('root'));
 
 > ※ 今は `<App />` を描画することが出来ませんが、ここは後々修正して動くようにします！
 
-> ※※ 何度もビルドするのは煩わしいので、ターミナルをもう１つ開いて `yarn dev -w` をしておくと保存するごとにビルドが走るようになって良いです。
+> ※※ 何度もビルドするのは煩わしいので、ターミナルをもう１つ開いて `npm run dev -w` をしておくと保存するごとにビルドが走るようになって良いです。
 
 ## `ToyScheduler` の実装
 
@@ -581,7 +581,7 @@ export function useStateImpl(initial) {}
 
 なおここまでの実装はこちらのブランチに用意してあるので、エラーなどで困っている場合は参考にしてください: https://github.com/shuta13/react-deep-dive/tree/feat/render-dom
 
-`yarn create toy-react-app render-dom <my-app>` で手元にダウンロード出来ます。
+`npx create-toy-react-app render-dom <my-app>` で手元にダウンロード出来ます。
 
 ---
 
