@@ -8,9 +8,18 @@ const styles = {
   wrapper: {
     maxWidth: '768px',
     width: '100%',
+    height: '100%',
     margin: 'auto',
+    background: 'mediumslateblue',
+    display: 'flex',
+    placeContent: 'center',
+    placeItems: 'center',
   },
-  header: { background: 'black', color: 'white', padding: '1rem' },
+  header: {
+    color: 'white',
+    padding: '1rem',
+    margin: 0,
+  },
 };
 
 export const App = () => {

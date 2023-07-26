@@ -12,7 +12,7 @@ const styles = {
     width: '100%',
     margin: 'auto',
   },
-  header: { background: 'black', color: 'white', padding: '1rem' },
+  header: { background: 'deepskyblue', color: 'white', padding: '1rem' },
 };
 
 export const App = () => {

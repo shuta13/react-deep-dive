@@ -25,18 +25,105 @@ export function render(element, container) {
   flushSync(internals);
 }
 
-export function hydrate(element, container) {
-  internals.wipRoot = {
-    dom: container,
-    props: {
-      children: [element],
-    },
-    alternate: internals.currentRoot,
-  };
-  internals.deletions = [];
-  internals.nextUnitOfWork = internals.wipRoot;
+function isEvent(key) {
+  return key.startsWith('on');
+}
+function isStyle(key) {
+  return key === 'style';
+}
+function isChildren(key) {
+  return key === 'children';
+}
+function isProperty(key) {
+  return !isChildren() && !isEvent(key) && !isStyle(key);
+}
 
-  // flushSync(internals);
+export function hydrate(element, container) {
+  const prevChildren = Array.from(container.childNodes);
+  const nextChildren = Array.isArray(element) ? element : [element];
+
+  nextChildren.forEach((nextChild, index) => {
+    const prevChild = prevChildren[index];
+
+    if (prevChild) {
+      if (nextChild.type === 'TEXT_ELEMENT') {
+        prevChildren.textContent = nextChild.props.nodeValue;
+      } else if (nextChild.type instanceof Function) {
+        const component = nextChild.type(nextChild.props);
+        const child = component.render ? component.render() : component;
+        for (const prop in child.props) {
+          if (isChildren(prop)) {
+            continue;
+          }
+          if (isStyle(prop)) {
+            const styles = Object.entries(child.props[prop]);
+            styles.forEach(([key, value]) => {
+              prevChild[prop][key] = value;
+            });
+          }
+          if (isProperty(prop)) {
+            prevChild[prop] = nextChild.props[prop];
+          }
+          if (isEvent(prop)) {
+            const eventType = prop.toLowerCase().substring(2);
+            prevChild.addEventListener(eventType, nextChild.props[prop]);
+          }
+        }
+        hydrate(child.props.children, prevChild);
+      } else {
+        hydrate(nextChild.props.children, prevChild);
+        for (const prop in nextChild.props) {
+          if (isChildren(prop)) {
+            continue;
+          }
+          if (isStyle(prop)) {
+            const styles = Object.entries(nextChild.props[prop]);
+            styles.forEach(([key, value]) => {
+              prevChild[prop][key] = value;
+            });
+          }
+          if (isProperty(prop)) {
+            prevChild[prop] = nextChild.props[prop];
+          }
+          if (isEvent(prop)) {
+            const eventType = prop.toLowerCase().substring(2);
+            prevChild.addEventListener(eventType, nextChild.props[prop]);
+          }
+        }
+      }
+    } else {
+      container.appendChild(createDom(nextChild));
+    }
+  });
+
+  while (prevChildren.length > nextChildren.length) {
+    container.removeChild(prevChildren.pop());
+  }
+
+  function createDom(element) {
+    const dom =
+      element.type === 'TEXT_ELEMENT'
+        ? document.createTextNode(element.props.nodeValue)
+        : document.createElement(element.type);
+    Object.keys(element.props).forEach((key) => {
+      if (isChildren(key)) {
+        element.props[key].forEach((child) => {
+          dom.appendChild(createDom(child));
+        });
+      }
+      if (isStyle(key)) {
+        dom.style[key] = element.props[key];
+      }
+      if (isProperty(key)) {
+        dom[key] = element.props[key];
+      }
+      if (isEvent(key)) {
+        const eventType = key.toLowerCase().substring(2);
+        dom.addEventListener(eventType, dom.props[key]);
+      }
+    });
+    return dom;
+  }
 }
 
 export function useStateImpl(initial) {
