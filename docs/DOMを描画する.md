@@ -5,7 +5,11 @@
 まずは `ToyReact.createElement` を実装します。 `createElement` 関数は以下のように受け取った引数に応じてオブジェクトを作成する関数です。
 
 ```js
-const element = ToyReact.createElement('div', null, ToyReact.createElement('span', null));
+const element = ToyReact.createElement(
+    'div',
+    null,
+    ToyReact.createElement('span', null)
+);
 
 /**
  * element = {
@@ -29,28 +33,27 @@ const element = ToyReact.createElement('div', null, ToyReact.createElement('span
 'use strict';
 
 function createTextElement(node) {
-  return {
-    type: 'TEXT_ELEMENT',
-    props: {
-      nodeValue: node,
-      children: [],
-    },
-  };
+    return {
+        type: 'TEXT_ELEMENT',
+        props: {
+            nodeValue: node,
+            children: [],
+        },
+    };
 }
 
 export function createElement(type, config, ...children) {
-  const props = {
-    ...config,
-    children: children.map((child) =>
-      typeof child === 'object' ? child : createTextElement(child)
-    ),
-  };
-  return {
-    type,
-    props,
-  };
+    const props = {
+        ...config,
+        children: children.map((child) =>
+            typeof child === 'object' ? child : createTextElement(child)
+        ),
+    };
+    return {
+        type,
+        props,
+    };
 }
-
 ```
 
 変更した箇所を見てみましょう。`createElement` は先に述べたように `type` と `props` のあるオブジェクトを返すようになりました。ここで急に現れた `createTextElement` について触れていきましょう。
@@ -95,28 +98,27 @@ export function render(element, container) {
 
 ```js
 function isProperty(key) {
-  return key !== 'children';
+    return key !== 'children';
 }
 
 export function render(element, container) {
-  const dom =
-    element.type === 'TEXT_ELEMENT'
-      ? document.createTextNode('')
-      : document.createElement(element.type);
+    const dom =
+        element.type === 'TEXT_ELEMENT'
+            ? document.createTextNode('')
+            : document.createElement(element.type);
 
-  Object.keys(element.props)
-    .filter(isProperty)
-    .forEach((name) => {
-      dom[name] = element.props[name];
+    Object.keys(element.props)
+        .filter(isProperty)
+        .forEach((name) => {
+            dom[name] = element.props[name];
+        });
+
+    element.props.children.forEach((child) => {
+        render(child, dom);
     });
 
-  element.props.children.forEach((child) => {
-    render(child, dom);
-  });
-
-  container.appendChild(dom);
+    container.appendChild(dom);
 }
-
 ```
 
 ここまで行った後、確認のため counter-app を起動してみましょう(`npm run dev && npm run start` を行って下さい)。
@@ -133,7 +135,6 @@ const ToyReactDOM = require('toy-react-dom');
 
 ToyReactDOM.render(<h1>This is ToyReact!</h1>, document.getElementById('root'));
 // ToyReactDOM.render(<App />, document.getElementById('root'));
-
 ```
 
 これで再度ビルドを行いサーバーを立ち上げ直してみましょう。「This is ToyReact!」の文字がブラウザで見れればひとまず完了です！
@@ -160,25 +161,24 @@ DOM の描画を制御するためのスケジューラーを実装していき�
 'use strict';
 
 function workLoop(deadline, commitRoot, performUnitOfWork, internals) {
-  let shouldYield = false;
-  while (internals.nextUnitOfWork && !shouldYield) {
-    internals.nextUnitOfWork = performUnitOfWork(
-      internals.nextUnitOfWork,
-      internals
+    let shouldYield = false;
+    while (internals.nextUnitOfWork && !shouldYield) {
+        internals.nextUnitOfWork = performUnitOfWork(
+            internals.nextUnitOfWork,
+            internals
+        );
+        shouldYield = deadline.timeRemaining() < 1;
+    }
+    requestIdleCallback((deadline) =>
+        workLoop(deadline, commitRoot, performUnitOfWork, internals)
     );
-    shouldYield = deadline.timeRemaining() < 1;
-  }
-  requestIdleCallback((deadline) =>
-    workLoop(deadline, commitRoot, performUnitOfWork, internals)
-  );
 }
 
 export function scheduleCallback(commitRoot, performUnitOfWork, internals) {
-  requestIdleCallback((deadline) =>
-    workLoop(deadline, commitRoot, performUnitOfWork, internals)
-  );
+    requestIdleCallback((deadline) =>
+        workLoop(deadline, commitRoot, performUnitOfWork, internals)
+    );
 }
-
 ```
 
 `requestIdleCallback` は渡した callback の引数として [IdleDeadline](https://developer.mozilla.org/en-US/docs/Web/API/IdleDeadline) を受け取ることが出来ます。これの `timeRemaining` 関数の返す値が `1 ms` 未満になるまで、つまりメインスレッドが何も処理を行っていない状態(=アイドル状態)のとき、先程の描画の処理を繰り返すようなコードになっています。`workLoop` は `scheduleCallback` を介して呼び出されます。後で `scheduleCallback` を呼び出す処理は追加します。
@@ -199,15 +199,15 @@ export function scheduleCallback(commitRoot, performUnitOfWork, internals) {
 
 ```js
 ToyReact.render(
-  <div>
-    <h1>
-      <p />
-      <a />
-    </h1>
-    <h2 />
-  </div>,
-  container
-)
+    <div>
+        <h1>
+            <p />
+            <a />
+        </h1>
+        <h2 />
+    </div>,
+    container
+);
 ```
 
 `render` ははじめにルートとなる fiber を `container` から作成します。次に `<div>...` について以下3つのことを行いながら fiber を作成・作業をします。
@@ -232,24 +232,23 @@ fiber は次に作業を行う要素を簡単に見つけるためのデータ�
 'use strict';
 
 const internals = {
-  nextUnitOfWork: null,
-  currentRoot: null,
-  wipRoot: null,
-  deletions: null,
-  wipFiber: null,
-  hookIndex: null,
+    nextUnitOfWork: null,
+    currentRoot: null,
+    wipRoot: null,
+    deletions: null,
+    wipFiber: null,
+    hookIndex: null,
 };
 
 function isProperty(key) {
-  return key !== 'children';
+    return key !== 'children';
 }
 
 export function render(element, container) {
-  // TODO: set next unit of work
+    // TODO: set next unit of work
 }
 
 export function useStateImpl(initial) {}
-
 ```
 
 `packages/toy-react-reconciler/src/ToyReactReconciler.js`
@@ -260,7 +259,7 @@ export function useStateImpl(initial) {}
 function isEvent(key) {}
 function isStyle(key) {}
 function isProperty(key) {
-  return key !== 'children';
+    return key !== 'children';
 }
 function isNew(prev, next) {}
 function isGone(prev, next) {}
@@ -268,20 +267,19 @@ function isGone(prev, next) {}
 export function updateDom(dom, prevProps, nextProps) {}
 
 export function createDom(fiber) {
-  const dom =
-    fiber.type === 'TEXT_ELEMENT'
-      ? document.createTextNode('')
-      : document.createElement(fiber.type);
+    const dom =
+        fiber.type === 'TEXT_ELEMENT'
+            ? document.createTextNode('')
+            : document.createElement(fiber.type);
 
-  Object.keys(fiber.props)
-    .filter(isProperty)
-    .forEach((name) => {
-      dom[name] = fiber.props[name];
-    });
+    Object.keys(fiber.props)
+        .filter(isProperty)
+        .forEach((name) => {
+            dom[name] = fiber.props[name];
+        });
 
-  return dom;
+    return dom;
 }
-
 ```
 
 次に `render` で fiber ツリーのルートを作成するようにしましょう。
@@ -292,25 +290,24 @@ export function createDom(fiber) {
 'use strict';
 
 const internals = {
-  nextUnitOfWork: null,
-  currentRoot: null,
-  wipRoot: null,
-  deletions: null,
-  wipFiber: null,
-  hookIndex: null,
+    nextUnitOfWork: null,
+    currentRoot: null,
+    wipRoot: null,
+    deletions: null,
+    wipFiber: null,
+    hookIndex: null,
 };
 
 export function render(element, container) {
-  internals.nextUnitOfWork = {
-    dom: container,
-    props: {
-      children: [element],
-    },
-  };
+    internals.nextUnitOfWork = {
+        dom: container,
+        props: {
+            children: [element],
+        },
+    };
 }
 
 export function useStateImpl(initial) {}
-
 ```
 
 作成したルートは `internals` オブジェクトの `nextUnitOfWork` に代入しておきます。これを先程の `toy-scheduler` の実装で行っていたように `performUnitOfWork` の結果で更新することで fiber ツリーの探索・それぞれの処理を進めていきます。
@@ -327,18 +324,17 @@ export function useStateImpl(initial) {}
 import { createDom } from './ToyReactFiberReconciler';
 
 function performUnitOfWork(fiber, internals) {
-  // add
-  if (!fiber.dom) {
-    fiber.dom = createDom();
-  }
+    // add
+    if (!fiber.dom) {
+        fiber.dom = createDom();
+    }
 
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
-  }
+    if (fiber.parent) {
+        fiber.parent.dom.appendChild(fiber.dom);
+    }
 }
 
 // ~~~
-
 ```
 
 次に、子要素ごとに新たな fiber を作成するようにします。
@@ -349,33 +345,32 @@ function performUnitOfWork(fiber, internals) {
 import { createDom } from './ToyReactFiberReconciler';
 
 function performUnitOfWork(fiber, internals) {
-  if (!fiber.dom) {
-    fiber.dom = createDom();
-  }
+    if (!fiber.dom) {
+        fiber.dom = createDom();
+    }
 
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
-  }
+    if (fiber.parent) {
+        fiber.parent.dom.appendChild(fiber.dom);
+    }
 
-  // add
-  const elements = fiber.props.children;
-  let index = 0;
-  let prevSibling = null;
+    // add
+    const elements = fiber.props.children;
+    let index = 0;
+    let prevSibling = null;
 
-  while (index < elements.length) {
-    const element = elements[index];
+    while (index < elements.length) {
+        const element = elements[index];
 
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    };
-  }
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null,
+        };
+    }
 }
 
 // ~~~
-
 ```
 
 そして、最初の子要素であるかどうかに応じて、子または兄弟として設定する fiber をツリーに追加します。
@@ -386,42 +381,41 @@ function performUnitOfWork(fiber, internals) {
 import { createDom } from './ToyReactFiberReconciler';
 
 function performUnitOfWork(fiber, internals) {
-  if (!fiber.dom) {
-    fiber.dom = createDom();
-  }
-
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
-  }
-
-  const elements = fiber.props.children;
-  let index = 0;
-  let prevSibling = null;
-
-  while (index < elements.length) {
-    const element = elements[index];
-
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    };
-
-    // add
-    if (index === 0) {
-      fiber.child = newFiber;
-    } else {
-      prevSibling.sibling = newFiber;
+    if (!fiber.dom) {
+        fiber.dom = createDom();
     }
 
-    prevSibling = newFiber;
-    index++;
-  }
+    if (fiber.parent) {
+        fiber.parent.dom.appendChild(fiber.dom);
+    }
+
+    const elements = fiber.props.children;
+    let index = 0;
+    let prevSibling = null;
+
+    while (index < elements.length) {
+        const element = elements[index];
+
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null,
+        };
+
+        // add
+        if (index === 0) {
+            fiber.child = newFiber;
+        } else {
+            prevSibling.sibling = newFiber;
+        }
+
+        prevSibling = newFiber;
+        index++;
+    }
 }
 
 // ~~~
-
 ```
 
 最後に次の作業単位を探索するような処理を追加します。子要素、兄弟、おじという順で調べていきます。
@@ -432,53 +426,52 @@ function performUnitOfWork(fiber, internals) {
 import { createDom } from './ToyReactFiberReconciler';
 
 function performUnitOfWork(fiber, internals) {
-  if (!fiber.dom) {
-    fiber.dom = createDom();
-  }
-
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
-  }
-
-  const elements = fiber.props.children;
-  let index = 0;
-  let prevSibling = null;
-
-  while (index < elements.length) {
-    const element = elements[index];
-
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    };
-
-    if (index === 0) {
-      fiber.child = newFiber;
-    } else {
-      prevSibling.sibling = newFiber;
+    if (!fiber.dom) {
+        fiber.dom = createDom();
     }
 
-    prevSibling = newFiber;
-    index++;
-  }
-
-  // add
-  if (fiber.child) {
-    return fiber.child;
-  }
-  let nextFiber = fiber;
-  while (nextFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling;
+    if (fiber.parent) {
+        fiber.parent.dom.appendChild(fiber.dom);
     }
-    nextFiber = nextFiber.parent;
-  }
+
+    const elements = fiber.props.children;
+    let index = 0;
+    let prevSibling = null;
+
+    while (index < elements.length) {
+        const element = elements[index];
+
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null,
+        };
+
+        if (index === 0) {
+            fiber.child = newFiber;
+        } else {
+            prevSibling.sibling = newFiber;
+        }
+
+        prevSibling = newFiber;
+        index++;
+    }
+
+    // add
+    if (fiber.child) {
+        return fiber.child;
+    }
+    let nextFiber = fiber;
+    while (nextFiber) {
+        if (nextFiber.sibling) {
+            return nextFiber.sibling;
+        }
+        nextFiber = nextFiber.parent;
+    }
 }
 
 // ~~~
-
 ```
 
 `packages/toy-react-reconciler/src/ToyReactFiberWorkLoop.js`　の完成形は以下のとおりです(スケジューラーを呼び出すための `flushSync` 関数も実装しましょう)。
@@ -490,56 +483,55 @@ import { scheduleCallback } from './ToyScheduler';
 import { createDom } from './ToyReactFiberReconciler';
 
 function performUnitOfWork(fiber, internals) {
-  if (!fiber.dom) {
-    fiber.dom = createDom(fiber);
-  }
-
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom);
-  }
-
-  const elements = fiber.props.children;
-  let index = 0;
-  let prevSibling = null;
-
-  while (index < elements.length) {
-    const element = elements[index];
-
-    const newFiber = {
-      type: element.type,
-      props: element.props,
-      parent: fiber,
-      dom: null,
-    };
-
-    if (index === 0) {
-      fiber.child = newFiber;
-    } else {
-      prevSibling.sibling = newFiber;
+    if (!fiber.dom) {
+        fiber.dom = createDom(fiber);
     }
 
-    prevSibling = newFiber;
-    index++;
-  }
-
-  if (fiber.child) {
-    return fiber.child;
-  }
-  let nextFiber = fiber;
-  while (nextFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling;
+    if (fiber.parent) {
+        fiber.parent.dom.appendChild(fiber.dom);
     }
-    nextFiber = nextFiber.parent;
-  }
+
+    const elements = fiber.props.children;
+    let index = 0;
+    let prevSibling = null;
+
+    while (index < elements.length) {
+        const element = elements[index];
+
+        const newFiber = {
+            type: element.type,
+            props: element.props,
+            parent: fiber,
+            dom: null,
+        };
+
+        if (index === 0) {
+            fiber.child = newFiber;
+        } else {
+            prevSibling.sibling = newFiber;
+        }
+
+        prevSibling = newFiber;
+        index++;
+    }
+
+    if (fiber.child) {
+        return fiber.child;
+    }
+    let nextFiber = fiber;
+    while (nextFiber) {
+        if (nextFiber.sibling) {
+            return nextFiber.sibling;
+        }
+        nextFiber = nextFiber.parent;
+    }
 }
 
 function commitRoot(internals) {}
 
 export function flushSync(internals) {
-  scheduleCallback(commitRoot, performUnitOfWork, internals);
+    scheduleCallback(commitRoot, performUnitOfWork, internals);
 }
-
 ```
 
 あとは `render` で `flushSync` を呼び出すように変更しておきます。
@@ -552,27 +544,26 @@ export function flushSync(internals) {
 import { flushSync } from 'toy-react-reconciler/src/ToyReactFiberWorkLoop';
 
 const internals = {
-  nextUnitOfWork: null,
-  currentRoot: null,
-  wipRoot: null,
-  deletions: null,
-  wipFiber: null,
-  hookIndex: null,
+    nextUnitOfWork: null,
+    currentRoot: null,
+    wipRoot: null,
+    deletions: null,
+    wipFiber: null,
+    hookIndex: null,
 };
 
 export function render(element, container) {
-  internals.nextUnitOfWork = {
-    dom: container,
-    props: {
-      children: [element],
-    },
-  };
+    internals.nextUnitOfWork = {
+        dom: container,
+        props: {
+            children: [element],
+        },
+    };
 
-  flushSync(internals);
+    flushSync(internals);
 }
 
 export function useStateImpl(initial) {}
-
 ```
 
 念の為ビルドを行ってサーバーを立ち上げ、「This is ToyReact!」がちゃんと表示されているか確認してみましょう。
@@ -581,7 +572,7 @@ export function useStateImpl(initial) {}
 
 なおここまでの実装はこちらのブランチに用意してあるので、エラーなどで困っている場合は参考にしてください: https://github.com/shuta13/react-deep-dive/tree/feat/render-dom
 
-`npx create-toy-react-app render-dom <my-app>` で手元にダウンロード出来ます。
+`npx create-toy-react-app 2021 render-dom <my-app>` で手元にダウンロード出来ます。
 
 ---
 
