@@ -25,6 +25,20 @@ export function render(element, container) {
   flushSync(internals);
 }
 
+export function hydrate(element, container) {
+  internals.wipRoot = {
+    dom: container,
+    props: {
+      children: [element],
+    },
+    alternate: internals.currentRoot,
+  };
+  internals.deletions = [];
+  internals.nextUnitOfWork = internals.wipRoot;
+
+  // flushSync(internals);
+}
+
 export function useStateImpl(initial) {
   const oldHook =
     internals.wipFiber.alternate &&
