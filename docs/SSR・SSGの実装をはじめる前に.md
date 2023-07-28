@@ -35,7 +35,7 @@ import ReactDOMServer from 'react-dom/server';
 const html = ReactDOMServer.renderToString(<App />);
 ```
 
-SSR の処理としては `html` の値を、クライアントサイドに送信するまでを指します。
+`html` の値を、クライアントサイドに送信することで、コンポーネントをページに表示できます。
 
 次に、`html` の値を見てみましょう。
 
