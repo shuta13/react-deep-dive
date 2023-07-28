@@ -1,6 +1,6 @@
-ここまででみなさんは React を自作し、その動作の仕組みを理解してきました。
+ここまでは ToyReact という簡易版 React を実装し、React の動作の仕組みを理解してきました。
 
-さて、本章以降では発展的な内容として、自作した React を用いて SSR と SSG を再現してみます。
+さて、本章以降では発展的な内容として、ToyReact を用いて SSR と SSG を再現してみます。
 
 ## 必要な知識の整理
 
@@ -35,7 +35,7 @@ import ReactDOMServer from 'react-dom/server';
 const html = ReactDOMServer.renderToString(<App />);
 ```
 
-SSR としてはこの `html` の値を、クライアントサイドに送信する処理のみで完結します。
+SSR の処理としては `html` の値を、クライアントサイドに送信するまでを指します。
 
 次に、`html` の値を見てみましょう。
 
