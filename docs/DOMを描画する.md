@@ -572,7 +572,7 @@ export function useStateImpl(initial) {}
 
 なおここまでの実装はこちらのブランチに用意してあるので、エラーなどで困っている場合は参考にしてください: https://github.com/shuta13/react-deep-dive/tree/feat/render-dom
 
-`npx create-toy-react-app 2021 render-dom <my-app>` で手元にダウンロード出来ます。
+`npx create-toy-react-app 2023 render-dom <my-app>` で手元にダウンロード出来ます。
 
 ---
 
