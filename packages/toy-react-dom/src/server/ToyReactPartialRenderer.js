@@ -37,14 +37,11 @@ class ToyReactDOMServerRenderer {
     }
 
     if (element.type instanceof Function) {
-      const component = element.type(element.props);
+      const component = element.type(element.props || {});
       const child = component.render ? component.render() : component;
       return this.renderElement(child);
     }
 
-    // TODO: 試しにdocument.createElementを使ってもらう
-    // もちろん、サーバーサイドなのでdocumentが使えない
-    // → hydration が必要
     const props = element.props || {};
     const attributes = Object.keys(props)
       .filter(isProperty)

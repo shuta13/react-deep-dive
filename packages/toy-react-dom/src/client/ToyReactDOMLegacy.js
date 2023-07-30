@@ -47,7 +47,7 @@ export function hydrate(element, container) {
 
     if (prevChild) {
       if (nextChild.type === 'TEXT_ELEMENT') {
-        prevChildren.textContent = nextChild.props.nodeValue;
+        prevChild.textContent = nextChild.props.nodeValue;
       } else if (nextChild.type instanceof Function) {
         const component = nextChild.type(nextChild.props);
         const child = component.render ? component.render() : component;
@@ -95,10 +95,6 @@ export function hydrate(element, container) {
       container.appendChild(createDom(nextChild));
     }
   });
-
-  while (prevChildren.length > nextChildren.length) {
-    container.removeChild(prevChildren.pop());
-  }
 
   function createDom(element) {
     const dom =
