@@ -106,7 +106,7 @@ export function renderToString(element, options) {
 
 `renderElement` のロジックは後ほど書きますが、文字列を返すメソッドになります。
 
-`destroy` は `read` の終了後に呼び出され、これが呼び出された以降はコンポーネントの HTML 文字列への変換は停止します。
+`destroy` は `read` の終了後に呼び出され、これが呼び出された以降、コンポーネントの HTML 文字列への変換を停止します。
 
 今回、これの恩恵を受ける場面はありませんが、 [react-dom の実装](https://github.com/facebook/react/blob/cae635054e17a6f107a39d328649137b83f25972/packages/react-dom/src/server/ReactPartialRenderer.js#L848-L854) をなるべく再現する目的で用意してみました。
 
