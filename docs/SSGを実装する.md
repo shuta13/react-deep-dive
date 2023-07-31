@@ -74,6 +74,8 @@ http://localhost:3002 を開くと、以下のような表示になっていれ�
 
 ![](../assets/ssg-app/npm-run-serve.png)
 
+実装済みのものは `npx create-toy-react-app 2023 ssg-completed <my-app>` で手元にダウンロード出来ます。
+
 ---
 
 ここまでで、SSRとSSGの実装は終了です。お疲れ様でした。
